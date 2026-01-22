@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Networks | McIntire Forecasting Networks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #0d1424;
+            --bg-tertiary: #111b2e;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-emerald: #10b981;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(148, 163, 184, 0.1);
+            --glow-cyan: 0 0 60px rgba(0, 212, 255, 0.3);
+            --glow-purple: 0 0 60px rgba(139, 92, 246, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        #neural-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--bg-primary), transparent);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 4rem;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-cyan);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--bg-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--glow-cyan);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.5);
+        }
+
+        .page-header {
+            position: relative;
+            z-index: 1;
+            padding: 10rem 4rem 4rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+        }
+
+        .page-header h1 .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .content-section {
+            position: relative;
+            z-index: 1;
+            padding: 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .content-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .content-block h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .content-block h2 .icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .content-block h2 .icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--bg-primary);
+        }
+
+        .content-block p {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .content-block p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .network-diagram {
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .network-diagram svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .network-diagram .caption {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .benefit-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-4px);
+        }
+
+        .benefit-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .benefit-card h3 svg {
+            width: 20px;
+            height: 20px;
+            color: var(--accent-cyan);
+        }
+
+        .benefit-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comparison-table th {
+            color: var(--accent-cyan);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .comparison-table td {
+            color: var(--text-secondary);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .cta-section h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--bg-primary);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow-cyan);
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 4rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            nav {
+                padding: 1rem 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .content-section {
+                padding: 2rem;
+            }
+            
+            .content-block {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="neural-bg"></canvas>
+    
+    <nav>
+        <a href="index.html" class="logo">
+            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="40" height="40">
+              <defs>
+                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#00d4ff"/>
+                  <stop offset="100%" style="stop-color:#8b5cf6"/>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="200" height="200" rx="40" fill="#0a0f1a"/>
+              <g stroke="url(#logoGrad)" stroke-width="3" opacity="0.6">
+                <line x1="50" y1="50" x2="100" y2="70"/>
+                <line x1="50" y1="50" x2="100" y2="100"/>
+                <line x1="50" y1="50" x2="100" y2="130"/>
+                <line x1="50" y1="100" x2="100" y2="70"/>
+                <line x1="50" y1="100" x2="100" y2="100"/>
+                <line x1="50" y1="100" x2="100" y2="130"/>
+                <line x1="50" y1="150" x2="100" y2="70"/>
+                <line x1="50" y1="150" x2="100" y2="100"/>
+                <line x1="50" y1="150" x2="100" y2="130"/>
+                <line x1="100" y1="70" x2="150" y2="100"/>
+                <line x1="100" y1="100" x2="150" y2="100"/>
+                <line x1="100" y1="130" x2="150" y2="100"/>
+              </g>
+              <circle cx="50" cy="50" r="12" fill="url(#logoGrad)"/>
+              <circle cx="50" cy="100" r="12" fill="url(#logoGrad)"/>
+              <circle cx="50" cy="150" r="12" fill="url(#logoGrad)"/>
+              <circle cx="100" cy="70" r="10" fill="url(#logoGrad)"/>
+              <circle cx="100" cy="100" r="10" fill="url(#logoGrad)"/>
+              <circle cx="100" cy="130" r="10" fill="url(#logoGrad)"/>
+              <circle cx="150" cy="100" r="14" fill="url(#logoGrad)"/>
+            </svg>
+            McIntire Forecasting Networks
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="neural-networks.html" class="active">Neural Networks</a></li>
+            <li><a href="checkout.html">Get a Quote</a></li>
+        </ul>
+        <a href="schedule.html" class="nav-cta">Schedule a Call</a>
+    </nav>
+
+    <div class="page-header">
+        <h1>Understanding <span class="gradient-text">Neural Networks</span></h1>
+        <p>How artificial intelligence learns patterns from your data to predict the future with remarkable accuracy.</p>
+    </div>
+
+    <section class="content-section">
+        <div class="content-block">
+            <h2>
+                <span class="icon">
+                    <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                </span>
+                What Is a Neural Network?
+            </h2>
+            <p>A neural network is a type of artificial intelligence modeled loosely after the human brain. Just as your brain uses billions of interconnected neurons to process information and recognize patterns, a neural network uses layers of mathematical "nodes" to learn from data.</p>
+            <p>Each node receives input, processes it using learned weights, and passes the result to the next layer. Through training on historical data, the network adjusts these weights to become increasingly accurate at recognizing patterns and making predictions.</p>
+            
+            <div class="network-diagram">
+                <svg viewBox="0 0 500 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Connection lines -->
+                    <g stroke="url(#diagramGrad)" stroke-width="2" opacity="0.4">
+                        <!-- Input to Hidden 1 -->
+                        <line x1="80" y1="50" x2="200" y2="45"/>
+                        <line x1="80" y1="50" x2="200" y2="95"/>
+                        <line x1="80" y1="50" x2="200" y2="145"/>
+                        <line x1="80" y1="50" x2="200" y2="195"/>
+                        <line x1="80" y1="125" x2="200" y2="45"/>
+                        <line x1="80" y1="125" x2="200" y2="95"/>
+                        <line x1="80" y1="125" x2="200" y2="145"/>
+                        <line x1="80" y1="125" x2="200" y2="195"/>
+                        <line x1="80" y1="200" x2="200" y2="45"/>
+                        <line x1="80" y1="200" x2="200" y2="95"/>
+                        <line x1="80" y1="200" x2="200" y2="145"/>
+                        <line x1="80" y1="200" x2="200" y2="195"/>
+                        <!-- Hidden 1 to Hidden 2 -->
+                        <line x1="200" y1="45" x2="300" y2="75"/>
+                        <line x1="200" y1="45" x2="300" y2="125"/>
+                        <line x1="200" y1="45" x2="300" y2="175"/>
+                        <line x1="200" y1="95" x2="300" y2="75"/>
+                        <line x1="200" y1="95" x2="300" y2="125"/>
+                        <line x1="200" y1="95" x2="300" y2="175"/>
+                        <line x1="200" y1="145" x2="300" y2="75"/>
+                        <line x1="200" y1="145" x2="300" y2="125"/>
+                        <line x1="200" y1="145" x2="300" y2="175"/>
+                        <line x1="200" y1="195" x2="300" y2="75"/>
+                        <line x1="200" y1="195" x2="300" y2="125"/>
+                        <line x1="200" y1="195" x2="300" y2="175"/>
+                        <!-- Hidden 2 to Output -->
+                        <line x1="300" y1="75" x2="420" y2="125"/>
+                        <line x1="300" y1="125" x2="420" y2="125"/>
+                        <line x1="300" y1="175" x2="420" y2="125"/>
+                    </g>
+                    <!-- Input layer nodes -->
+                    <circle cx="80" cy="50" r="18" fill="url(#diagramGrad)"/>
+                    <circle cx="80" cy="125" r="18" fill="url(#diagramGrad)"/>
+                    <circle cx="80" cy="200" r="18" fill="url(#diagramGrad)"/>
+                    <!-- Hidden layer 1 nodes -->
+                    <circle cx="200" cy="45" r="15" fill="url(#diagramGrad)"/>
+                    <circle cx="200" cy="95" r="15" fill="url(#diagramGrad)"/>
+                    <circle cx="200" cy="145" r="15" fill="url(#diagramGrad)"/>
+                    <circle cx="200" cy="195" r="15" fill="url(#diagramGrad)"/>
+                    <!-- Hidden layer 2 nodes -->
+                    <circle cx="300" cy="75" r="15" fill="url(#diagramGrad)"/>
+                    <circle cx="300" cy="125" r="15" fill="url(#diagramGrad)"/>
+                    <circle cx="300" cy="175" r="15" fill="url(#diagramGrad)"/>
+                    <!-- Output layer node -->
+                    <circle cx="420" cy="125" r="20" fill="url(#diagramGrad)"/>
+                    <!-- Labels -->
+                    <text x="80" y="235" fill="#64748b" font-size="12" text-anchor="middle" font-family="IBM Plex Mono">Input</text>
+                    <text x="200" y="235" fill="#64748b" font-size="12" text-anchor="middle" font-family="IBM Plex Mono">Hidden 1</text>
+                    <text x="300" y="235" fill="#64748b" font-size="12" text-anchor="middle" font-family="IBM Plex Mono">Hidden 2</text>
+                    <text x="420" y="235" fill="#64748b" font-size="12" text-anchor="middle" font-family="IBM Plex Mono">Output</text>
+                    <defs>
+                        <linearGradient id="diagramGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d4ff"/>
+                            <stop offset="100%" style="stop-color:#8b5cf6"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <p class="caption">A typical neural network architecture with input, hidden, and output layers</p>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2>
+                <span class="icon">
+                    <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                </span>
+                How Neural Networks Improve Forecasting
+            </h2>
+            <p>Traditional forecasting methods like moving averages or linear regression can only capture simple, obvious patterns. Neural networks excel at discovering complex, non-linear relationships in your data that humans and simpler algorithms would miss.</p>
+            
+            <div class="highlight-box">
+                <p><strong>Real-world example:</strong> In 2025, my neural network model achieved forecasts within 0.5% of actual sales—far more accurate than traditional methods could achieve on the same data.</p>
+            </div>
+            
+            <p>Neural networks can simultaneously consider dozens of factors: seasonality, day-of-week effects, promotional impacts, weather patterns, economic indicators, and subtle interactions between all of these. The more quality data you provide, the more patterns the network can learn.</p>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Pattern Recognition
+                    </h3>
+                    <p>Discovers hidden patterns in your historical data that traditional methods miss.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        Adaptive Learning
+                    </h3>
+                    <p>Improves over time as it's retrained with new data from your business.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        Multi-Variable Analysis
+                    </h3>
+                    <p>Considers dozens of factors simultaneously to capture complex interactions.</p>
+                </div>
+                <div class="benefit-card">
+                    <h3>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Non-Linear Relationships
+                    </h3>
+                    <p>Captures complex relationships that linear models simply cannot represent.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-block">
+            <h2>
+                <span class="icon">
+                    <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </span>
+                Neural Networks vs. Traditional Methods
+            </h2>
+            <p>Understanding when neural networks provide value over simpler approaches helps set realistic expectations.</p>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Aspect</th>
+                    <th>Traditional Methods</th>
+                    <th>Neural Networks</th>
+                </tr>
+                <tr>
+                    <td>Pattern Complexity</td>
+                    <td>Simple, linear patterns only</td>
+                    <td>Complex, non-linear patterns</td>
+                </tr>
+                <tr>
+                    <td>Data Requirements</td>
+                    <td>Works with limited data</td>
+                    <td>Needs 1+ years (2+ ideal)</td>
+                </tr>
+                <tr>
+                    <td>Multiple Variables</td>
+                    <td>Limited interactions</td>
+                    <td>Captures complex interactions</td>
+                </tr>
+                <tr>
+                    <td>Accuracy Potential</td>
+                    <td>Good for simple patterns</td>
+                    <td>Excellent with quality data</td>
+                </tr>
+                <tr>
+                    <td>Interpretability</td>
+                    <td>Easy to understand</td>
+                    <td>More complex ("black box")</td>
+                </tr>
+                <tr>
+                    <td>Setup Effort</td>
+                    <td>Quick to implement</td>
+                    <td>Requires custom development</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="content-block">
+            <h2>
+                <span class="icon">
+                    <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                </span>
+                What Data Do You Need?
+            </h2>
+            <p>The quality and quantity of your historical data directly impacts forecast accuracy. Here's what works best:</p>
+            
+            <div class="highlight-box">
+                <p><strong>Minimum requirement:</strong> At least 1 year of historical data to capture seasonal patterns and business cycles.</p>
+            </div>
+            
+            <div class="highlight-box">
+                <p><strong>Ideal for best results:</strong> 2+ years of data allows the model to identify complex patterns, handle anomalies, and achieve the highest accuracy.</p>
+            </div>
+            
+            <p>The more consistent and complete your data, the better your results will be. Data should include your target metric (sales, demand, etc.) along with any relevant factors like dates, promotions, events, or external variables that might influence your numbers.</p>
+        </div>
+
+        <div class="cta-section">
+            <h2>Ready to See What Neural Networks Can Do for You?</h2>
+            <p>Let's discuss your data, your goals, and how a custom neural network model could transform your forecasting accuracy.</p>
+            <a href="checkout.html" class="btn-primary">
+                Get a Quote
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">McIntire Forecasting Networks</div>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="checkout.html">Get a Quote</a></li>
+            </ul>
+            <div class="footer-copy">© 2025 McIntire Forecasting Networks</div>
+        </div>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('neural-bg');
+        const ctx = canvas.getContext('2d');
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Node {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        const nodes = [];
+        for (let i = 0; i < 50; i++) {
+            nodes.push(new Node(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.2 * (1 - dist / 150)})`;
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>

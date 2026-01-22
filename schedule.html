@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule a Call | McIntire Forecasting Networks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #0d1424;
+            --bg-tertiary: #111b2e;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-emerald: #10b981;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(148, 163, 184, 0.1);
+            --glow-cyan: 0 0 60px rgba(0, 212, 255, 0.3);
+            --glow-purple: 0 0 60px rgba(139, 92, 246, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        #neural-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--bg-primary), transparent);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 4rem;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-cyan);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--bg-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--glow-cyan);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.5);
+        }
+
+        .page-header {
+            position: relative;
+            z-index: 1;
+            padding: 10rem 4rem 4rem;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 1.15rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .schedule-section {
+            position: relative;
+            z-index: 1;
+            padding: 2rem 4rem 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .schedule-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+        }
+
+        .schedule-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .info-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .info-card svg {
+            width: 32px;
+            height: 32px;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+        }
+
+        .info-card h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .calendly-container {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            min-height: 650px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .calendly-container iframe {
+            width: 100%;
+            height: 650px;
+            border: none;
+        }
+
+        .calendly-placeholder {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .calendly-placeholder h3 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .calendly-placeholder p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .calendly-placeholder a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--bg-primary);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .calendly-placeholder a:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-cyan);
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 4rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 900px) {
+            nav {
+                padding: 1rem 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+
+            .schedule-section {
+                padding: 2rem;
+            }
+
+            .schedule-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="neural-bg"></canvas>
+    
+    <nav>
+        <a href="index.html" class="logo">
+            <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="40" height="40">
+              <defs>
+                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#00d4ff"/>
+                  <stop offset="100%" style="stop-color:#8b5cf6"/>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="200" height="200" rx="40" fill="#0a0f1a"/>
+              <g stroke="url(#logoGrad)" stroke-width="3" opacity="0.6">
+                <line x1="50" y1="50" x2="100" y2="70"/>
+                <line x1="50" y1="50" x2="100" y2="100"/>
+                <line x1="50" y1="50" x2="100" y2="130"/>
+                <line x1="50" y1="100" x2="100" y2="70"/>
+                <line x1="50" y1="100" x2="100" y2="100"/>
+                <line x1="50" y1="100" x2="100" y2="130"/>
+                <line x1="50" y1="150" x2="100" y2="70"/>
+                <line x1="50" y1="150" x2="100" y2="100"/>
+                <line x1="50" y1="150" x2="100" y2="130"/>
+                <line x1="100" y1="70" x2="150" y2="100"/>
+                <line x1="100" y1="100" x2="150" y2="100"/>
+                <line x1="100" y1="130" x2="150" y2="100"/>
+              </g>
+              <circle cx="50" cy="50" r="12" fill="url(#logoGrad)"/>
+              <circle cx="50" cy="100" r="12" fill="url(#logoGrad)"/>
+              <circle cx="50" cy="150" r="12" fill="url(#logoGrad)"/>
+              <circle cx="100" cy="70" r="10" fill="url(#logoGrad)"/>
+              <circle cx="100" cy="100" r="10" fill="url(#logoGrad)"/>
+              <circle cx="100" cy="130" r="10" fill="url(#logoGrad)"/>
+              <circle cx="150" cy="100" r="14" fill="url(#logoGrad)"/>
+            </svg>
+            McIntire Forecasting Networks
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="neural-networks.html">Neural Networks</a></li>
+            <li><a href="checkout.html">Get a Quote</a></li>
+        </ul>
+        <a href="schedule.html" class="nav-cta active">Schedule a Call</a>
+    </nav>
+
+    <div class="page-header">
+        <h1>Schedule a Call</h1>
+        <p>Let's discuss your forecasting needs and how neural networks can help your business make better predictions.</p>
+    </div>
+
+    <section class="schedule-section">
+        <div class="schedule-container">
+            <div class="schedule-info">
+                <div class="info-card">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h3>30 Minutes</h3>
+                    <p>Quick consultation to understand your needs</p>
+                </div>
+                <div class="info-card">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                    <h3>Video Call</h3>
+                    <p>Via Google Meet or Zoom</p>
+                </div>
+                <div class="info-card">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h3>Free</h3>
+                    <p>No obligation consultation</p>
+                </div>
+            </div>
+
+            <div class="calendly-container">
+                <!-- OPTION 1: Replace with your Calendly embed -->
+                <!-- <iframe src="https://calendly.com/YOUR_USERNAME/30min"></iframe> -->
+                
+                <!-- OPTION 2: Placeholder with email link (remove when adding Calendly) -->
+                <div class="calendly-placeholder">
+                    <h3>Book Your Free Consultation</h3>
+                    <p>Click below to schedule a time that works for you, or email me directly.</p>
+                    <a href="/cdn-cgi/l/email-protection#6c060d0f071f03022c010f050218051e090a031e090f0d1f1805020b420f0301531f190e06090f18512f03021f1900180d18050302495e5c3e091d19091f18">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        Email Me to Schedule
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">McIntire Forecasting Networks</div>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="checkout.html">Get a Quote</a></li>
+            </ul>
+            <div class="footer-copy">© 2025 McIntire Forecasting Networks</div>
+        </div>
+    </footer>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        const canvas = document.getElementById('neural-bg');
+        const ctx = canvas.getContext('2d');
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Node {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        const nodes = [];
+        for (let i = 0; i < 50; i++) {
+            nodes.push(new Node(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.2 * (1 - dist / 150)})`;
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (wind
