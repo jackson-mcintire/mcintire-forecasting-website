@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule a Call | McIntire Forecasting Networks</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -254,11 +256,40 @@
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
 
         .calendly-placeholder a:hover {
             transform: translateY(-2px);
             box-shadow: var(--glow-cyan);
+        }
+
+        .email-note {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .email-alternative {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .email-alternative a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .email-alternative a:hover {
+            color: var(--text-primary);
+        }
+
+        .calendly-inline-widget {
+            border-radius: 12px;
+            overflow: hidden;
         }
 
         footer {
@@ -548,18 +579,13 @@
             </div>
 
             <div class="calendly-container">
-                <!-- OPTION 1: Replace with your Calendly embed -->
-                <!-- <iframe src="https://calendly.com/YOUR_USERNAME/30min"></iframe> -->
-                
-                <!-- OPTION 2: Placeholder with email link (remove when adding Calendly) -->
-                <div class="calendly-placeholder">
-                    <h3>Book Your Free Consultation</h3>
-                    <p>Click below to schedule a time that works for you, or email me directly.</p>
-                    <a href="mailto:mcintirejackson@gmail.com">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        Email Me to Schedule
-                    </a>
-                </div>
+                <!-- Calendly inline widget -->
+                <div class="calendly-inline-widget" data-url="https://calendly.com/mcintirejackson/30min" style="min-width:320px;height:650px;width:100%;"></div>
+                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+            </div>
+            
+            <div class="email-alternative">
+                <p>Prefer email? Reach out directly at <a href="mailto:mcintirejackson@gmail.com?subject=Forecasting%20Consultation%20Request">mcintirejackson@gmail.com</a></p>
             </div>
         </div>
     </section>
