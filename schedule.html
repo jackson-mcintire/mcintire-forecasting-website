@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Schedule a Call | McIntire Forecasting Networks</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -554,7 +555,7 @@
                 <div class="calendly-placeholder">
                     <h3>Book Your Free Consultation</h3>
                     <p>Click below to schedule a time that works for you, or email me directly.</p>
-                    <a href="/cdn-cgi/l/email-protection#6c060d0f071f03022c010f050218051e090a031e090f0d1f1805020b420f0301531f190e06090f18512f03021f1900180d18050302495e5c3e091d19091f18">
+                    <a href="mailto:mcintirejackson@gmail.com">
                         <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         Email Me to Schedule
                     </a>
@@ -575,7 +576,7 @@
         </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
 
         // Mobile menu toggle
         function toggleMenu() {
@@ -662,4 +663,12 @@
 
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('nav');
-            if (wind
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
