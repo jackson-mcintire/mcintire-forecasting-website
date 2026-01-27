@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Get a Quote | McIntire Forecasting Networks</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -968,20 +970,46 @@
             });
         });
 
-        // Form submission
+        // Form submission - sends email
         document.getElementById('checkoutForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData);
-            data.package = 'Neural Network Buildout';
-            data.packagePrice = basePrice;
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const company = document.getElementById('company').value || 'Not provided';
+            const notes = document.getElementById('notes').value || 'None';
+            
+            let maintenancePlan = 'None selected';
             if (selectedRerun) {
-                data.maintenance = selectedRerun.name;
-                data.maintenancePrice = selectedRerun.price;
+                maintenancePlan = selectedRerun.name + ' - $' + selectedRerun.price + '/' + selectedRerun.period;
             }
             
-            alert('Thank you for your interest! Your quote request has been submitted. I\'ll be in touch within 24 hours to schedule a free consultation and discuss your forecasting needs.');
-            e.target.reset();
+            const total = selectedRerun ? basePrice + selectedRerun.price : basePrice;
+            
+            const subject = encodeURIComponent('Quote Request from ' + firstName + ' ' + lastName);
+            const body = encodeURIComponent(
+                'NEW QUOTE REQUEST\n' +
+                '==================\n\n' +
+                'Contact Information:\n' +
+                '- Name: ' + firstName + ' ' + lastName + '\n' +
+                '- Email: ' + email + '\n' +
+                '- Company: ' + company + '\n\n' +
+                'Selected Services:\n' +
+                '- Neural Network Buildout: $4,700\n' +
+                '- Maintenance Plan: ' + maintenancePlan + '\n' +
+                '- Estimated Total: $' + total.toLocaleString() + '\n\n' +
+                'Project Notes:\n' + notes + '\n\n' +
+                '==================\n' +
+                'Submitted from McIntire Forecasting Networks website'
+            );
+            
+            window.location.href = 'mailto:mcintirejackson@gmail.com?subject=' + subject + '&body=' + body;
+            
+            // Show thank you message
+            setTimeout(() => {
+                alert('Thank you for your interest, ' + firstName + '! Your email client should open with the quote details. If it doesn\'t, please email me directly at mcintirejackson@gmail.com');
+            }, 500);
         });
     </script>
 </body>
