@@ -813,7 +813,10 @@
                     <span class="summary-total-price">$4,700</span>
                 </div>
 
-                <form class="checkout-form" id="checkoutForm">
+                <form class="checkout-form" id="checkoutForm" action="https://formspree.io/f/xlgbplpw" method="POST">
+                    <input type="hidden" name="package" value="Neural Network Buildout - $4,700">
+                    <input type="hidden" id="maintenancePlan" name="maintenance_plan" value="None selected">
+                    <input type="hidden" id="totalPrice" name="total_price" value="$4,700">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name</label>
@@ -942,7 +945,9 @@
         const rerunItem = document.querySelector('.rerun-item');
         const rerunName = document.querySelector('.rerun-name');
         const rerunPrice = document.querySelector('.rerun-price');
-        const totalPrice = document.querySelector('.summary-total-price');
+        const totalPriceDisplay = document.querySelector('.summary-total-price');
+        const maintenancePlanField = document.getElementById('maintenancePlan');
+        const totalPriceField = document.getElementById('totalPrice');
 
         let selectedRerun = null;
         const basePrice = 4700;
@@ -953,7 +958,9 @@
                     card.classList.remove('selected');
                     selectedRerun = null;
                     rerunItem.style.display = 'none';
-                    totalPrice.textContent = '$' + basePrice.toLocaleString();
+                    totalPriceDisplay.textContent = '$' + basePrice.toLocaleString();
+                    maintenancePlanField.value = 'None selected';
+                    totalPriceField.value = '$' + basePrice.toLocaleString();
                 } else {
                     rerunCards.forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
@@ -965,51 +972,12 @@
                     rerunItem.style.display = 'flex';
                     rerunName.textContent = selectedRerun.name;
                     rerunPrice.textContent = '$' + selectedRerun.price.toLocaleString() + '/' + (selectedRerun.period === 'quarterly' ? 'qtr' : selectedRerun.period === 'semi-annual' ? '6mo' : 'yr');
-                    totalPrice.textContent = '$' + (basePrice + selectedRerun.price).toLocaleString();
+                    const total = basePrice + selectedRerun.price;
+                    totalPriceDisplay.textContent = '$' + total.toLocaleString();
+                    maintenancePlanField.value = selectedRerun.name + ' - $' + selectedRerun.price.toLocaleString() + '/' + selectedRerun.period;
+                    totalPriceField.value = '$' + total.toLocaleString();
                 }
             });
-        });
-
-        // Form submission - sends email
-        document.getElementById('checkoutForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
-            const company = document.getElementById('company').value || 'Not provided';
-            const notes = document.getElementById('notes').value || 'None';
-            
-            let maintenancePlan = 'None selected';
-            if (selectedRerun) {
-                maintenancePlan = selectedRerun.name + ' - $' + selectedRerun.price + '/' + selectedRerun.period;
-            }
-            
-            const total = selectedRerun ? basePrice + selectedRerun.price : basePrice;
-            
-            const subject = encodeURIComponent('Quote Request from ' + firstName + ' ' + lastName);
-            const body = encodeURIComponent(
-                'NEW QUOTE REQUEST\n' +
-                '==================\n\n' +
-                'Contact Information:\n' +
-                '- Name: ' + firstName + ' ' + lastName + '\n' +
-                '- Email: ' + email + '\n' +
-                '- Company: ' + company + '\n\n' +
-                'Selected Services:\n' +
-                '- Neural Network Buildout: $4,700\n' +
-                '- Maintenance Plan: ' + maintenancePlan + '\n' +
-                '- Estimated Total: $' + total.toLocaleString() + '\n\n' +
-                'Project Notes:\n' + notes + '\n\n' +
-                '==================\n' +
-                'Submitted from McIntire Forecasting Networks website'
-            );
-            
-            window.location.href = 'mailto:mcintirejackson@gmail.com?subject=' + subject + '&body=' + body;
-            
-            // Show thank you message
-            setTimeout(() => {
-                alert('Thank you for your interest, ' + firstName + '! Your email client should open with the quote details. If it doesn\'t, please email me directly at mcintirejackson@gmail.com');
-            }, 500);
         });
     </script>
 </body>
