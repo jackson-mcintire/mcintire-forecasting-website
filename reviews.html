@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Reviews | McIntire Forecasting Networks</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="shortcut icon" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0f1a;
+            --bg-secondary: #0d1424;
+            --bg-tertiary: #111b2e;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-emerald: #10b981;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: rgba(148, 163, 184, 0.1);
+            --glow-cyan: 0 0 60px rgba(0, 212, 255, 0.3);
+            --glow-purple: 0 0 60px rgba(139, 92, 246, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Neural Network Background Canvas */
+        #neural-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, var(--bg-primary), transparent);
+            transition: all 0.3s ease;
+        }
+
+        nav.scrolled {
+            background: rgba(10, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 1rem 4rem;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent-cyan);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-links a:hover::after,
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--bg-primary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--glow-cyan);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 80px rgba(0, 212, 255, 0.5);
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 28px;
+            height: 20px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: var(--text-primary);
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 15, 26, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+            text-align: center;
+        }
+
+        .mobile-menu ul li {
+            margin: 1.5rem 0;
+        }
+
+        .mobile-menu ul li a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-menu ul li a:hover,
+        .mobile-menu ul li a.active {
+            color: var(--accent-cyan);
+        }
+
+        .mobile-menu .mobile-cta {
+            margin-top: 2rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--bg-primary);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10rem 4rem 4rem;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero-tag::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease 0.1s both;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sections */
+        section {
+            position: relative;
+            z-index: 1;
+            padding: 6rem 4rem;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 4rem;
+        }
+
+        .section-tag {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .section-header h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Reviews Section */
+        #reviews {
+            background: linear-gradient(to bottom, transparent, var(--bg-secondary), transparent);
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .review-card {
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .review-card:hover::before {
+            opacity: 1;
+        }
+
+        .review-stars {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .star {
+            width: 20px;
+            height: 20px;
+            fill: var(--accent-cyan);
+        }
+
+        .star.empty {
+            fill: var(--text-muted);
+            opacity: 0.3;
+        }
+
+        .review-quote {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+            font-family: 'DM Serif Display', serif;
+            font-size: 5rem;
+            color: var(--accent-cyan);
+            opacity: 0.1;
+            line-height: 1;
+        }
+
+        .review-text {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--bg-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .author-info h4 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .author-info span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .no-reviews {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+        }
+
+        .no-reviews p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Submit Review Section */
+        #submit-review {
+            background: var(--bg-primary);
+        }
+
+        .submit-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+        }
+
+        .review-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 1rem 1.25rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .star-rating-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 0.5rem;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            cursor: pointer;
+            font-size: 2rem;
+            color: var(--text-muted);
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: var(--accent-cyan);
+        }
+
+        .star-rating label:hover {
+            transform: scale(1.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .checkbox-group label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--bg-primary);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--glow-cyan);
+        }
+
+        .form-note {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Success Message */
+        .success-message {
+            display: none;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-emerald);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .success-message h3 {
+            color: var(--accent-emerald);
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message p {
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 1;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            nav {
+                padding: 1rem 2rem;
+            }
+
+            .hero {
+                padding: 8rem 2rem 4rem;
+            }
+
+            section {
+                padding: 4rem 2rem;
+            }
+
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .submit-container {
+                padding: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links,
+            .nav-cta {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .mobile-menu {
+                display: flex;
+            }
+
+            .hero {
+                padding: 7rem 1.5rem 3rem;
+                min-height: auto;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            section {
+                padding: 3rem 1.5rem;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .review-card {
+                padding: 1.5rem;
+            }
+
+            .submit-container {
+                padding: 1.5rem;
+            }
+
+            footer {
+                padding: 2rem 1.5rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="neural-bg"></canvas>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="logo">
+            <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="40" height="40" rx="10" fill="url(#logoGrad)"/>
+                <circle cx="20" cy="12" r="3" fill="#0a0f1a"/>
+                <circle cx="12" cy="24" r="3" fill="#0a0f1a"/>
+                <circle cx="20" cy="24" r="3" fill="#0a0f1a"/>
+                <circle cx="28" cy="24" r="3" fill="#0a0f1a"/>
+                <circle cx="16" cy="32" r="2.5" fill="#0a0f1a"/>
+                <circle cx="24" cy="32" r="2.5" fill="#0a0f1a"/>
+                <line x1="20" y1="15" x2="20" y2="21" stroke="#0a0f1a" stroke-width="1.5"/>
+                <line x1="17" y1="14" x2="13" y2="21" stroke="#0a0f1a" stroke-width="1.5"/>
+                <line x1="23" y1="14" x2="27" y2="21" stroke="#0a0f1a" stroke-width="1.5"/>
+                <line x1="13" y1="27" x2="16" y2="30" stroke="#0a0f1a" stroke-width="1.5"/>
+                <line x1="27" y1="27" x2="24" y2="30" stroke="#0a0f1a" stroke-width="1.5"/>
+                <line x1="20" y1="27" x2="20" y2="29" stroke="#0a0f1a" stroke-width="1.5"/>
+                <defs>
+                    <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                        <stop offset="0%" stop-color="#00d4ff"/>
+                        <stop offset="100%" stop-color="#8b5cf6"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            McIntire Forecasting
+        </a>
+        <div class="hamburger" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="neural-networks.html">Neural Networks</a></li>
+            <li><a href="reviews.html" class="active">Reviews</a></li>
+        </ul>
+        <a href="schedule.html" class="nav-cta">Get Started</a>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="neural-networks.html">Neural Networks</a></li>
+            <li><a href="reviews.html" class="active">Reviews</a></li>
+        </ul>
+        <a href="schedule.html" class="mobile-cta">Get Started</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-tag">Client Testimonials</div>
+            <h1>What Our <span class="gradient-text">Clients</span> Say</h1>
+            <p>Real feedback from businesses that have transformed their forecasting with neural network precision.</p>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews">
+        <div class="section-header">
+            <span class="section-tag">Testimonials</span>
+            <h2>Success Stories</h2>
+            <p>See how neural network forecasting has helped businesses achieve unprecedented accuracy.</p>
+        </div>
+        <div class="reviews-grid" id="reviewsContainer">
+            <!-- Reviews loaded via JavaScript -->
+        </div>
+    </section>
+
+    <!-- Submit Review Section -->
+    <section id="submit-review">
+        <div class="section-header">
+            <span class="section-tag">Share Your Experience</span>
+            <h2>Leave a Review</h2>
+            <p>Worked with us? We'd love to hear about your experience.</p>
+        </div>
+        <div class="submit-container">
+            <form class="review-form" id="reviewForm" action="https://formspree.io/f/xlgbplpw" method="POST">
+                <input type="hidden" name="_subject" value="New Review Submission - McIntire Forecasting Networks">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Your Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="John Smith">
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Company Name *</label>
+                        <input type="text" id="company" name="company" required placeholder="Acme Corp">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title">Your Title</label>
+                        <input type="text" id="title" name="title" placeholder="CEO, Director of Sales, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required placeholder="john@company.com">
+                    </div>
+                </div>
+
+                <div class="form-group star-rating-group">
+                    <label>Rating *</label>
+                    <div class="star-rating">
+                        <input type="radio" id="star5" name="rating" value="5" required>
+                        <label for="star5" title="5 stars">★</label>
+                        <input type="radio" id="star4" name="rating" value="4">
+                        <label for="star4" title="4 stars">★</label>
+                        <input type="radio" id="star3" name="rating" value="3">
+                        <label for="star3" title="3 stars">★</label>
+                        <input type="radio" id="star2" name="rating" value="2">
+                        <label for="star2" title="2 stars">★</label>
+                        <input type="radio" id="star1" name="rating" value="1">
+                        <label for="star1" title="1 star">★</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="review">Your Review *</label>
+                    <textarea id="review" name="review" required placeholder="Tell us about your experience working with McIntire Forecasting Networks. How did our neural network forecasting help your business?"></textarea>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="permission" name="permission" value="yes" required>
+                    <label for="permission">I give permission for my review to be published on this website *</label>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    Submit Review
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                    </svg>
+                </button>
+                
+                <p class="form-note">* All reviews are moderated before being published to ensure authenticity.</p>
+            </form>
+
+            <div class="success-message" id="successMessage">
+                <h3>Thank You!</h3>
+                <p>Your review has been submitted and is pending approval. We appreciate your feedback!</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">McIntire Forecasting Networks</div>
+            <ul class="footer-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="neural-networks.html">Neural Networks</a></li>
+                <li><a href="reviews.html">Reviews</a></li>
+                <li><a href="schedule.html">Get a Quote</a></li>
+            </ul>
+            <div class="footer-copy">© 2025 McIntire Forecasting Networks</div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================
+        // APPROVED REVIEWS - Edit this array to add/remove reviews
+        // When you receive a review via email, add it here and redeploy
+        // ============================================
+        const APPROVED_REVIEWS = [
+            // Example format - delete these and add real reviews:
+            /*
+            {
+                name: "Sarah Johnson",
+                company: "TechStart Inc.",
+                title: "VP of Sales",
+                rating: 5,
+                text: "McIntire Forecasting Networks transformed our sales predictions. Their neural network model reduced our forecast variance from 15% to under 2%. Jackson was professional, communicative, and delivered exactly what he promised."
+            },
+            {
+                name: "Michael Chen",
+                company: "Retail Dynamics",
+                title: "Director of Operations",
+                rating: 5,
+                text: "We were skeptical about switching from traditional forecasting methods, but the results speak for themselves. Our inventory management has improved dramatically."
+            }
+            */
+        ];
+
+        // Render reviews
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            
+            if (APPROVED_REVIEWS.length === 0) {
+                container.innerHTML = `
+                    <div class="no-reviews">
+                        <p>No reviews yet. Be the first to share your experience!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = APPROVED_REVIEWS.map(review => `
+                <article class="review-card">
+                    <span class="review-quote">"</span>
+                    <div class="review-stars">
+                        ${Array(5).fill().map((_, i) => `
+                            <svg class="star ${i < review.rating ? '' : 'empty'}" viewBox="0 0 20 20">
+                                <path d="M10 15.27L16.18 19l-1.64-7.03L20 7.24l-7.19-.61L10 0 7.19 6.63 0 7.24l5.46 4.73L3.82 19z"/>
+                            </svg>
+                        `).join('')}
+                    </div>
+                    <p class="review-text">${review.text}</p>
+                    <div class="review-author">
+                        <div class="author-avatar">${review.name.split(' ').map(n => n[0]).join('')}</div>
+                        <div class="author-info">
+                            <h4>${review.name}</h4>
+                            <span>${review.title ? review.title + ', ' : ''}${review.company}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        // Mobile menu toggle
+        function toggleMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Form submission
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const formData = new FormData(form);
+            
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            }).then(response => {
+                if (response.ok) {
+                    form.style.display = 'none';
+                    document.getElementById('successMessage').classList.add('show');
+                } else {
+                    alert('There was an error submitting your review. Please try again.');
+                }
+            }).catch(error => {
+                alert('There was an error submitting your review. Please try again.');
+            });
+        });
+
+        // Neural network background animation
+        const canvas = document.getElementById('neural-bg');
+        const ctx = canvas.getContext('2d');
+        
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        class Node {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 212, 255, 0.5)';
+                ctx.fill();
+            }
+        }
+
+        const nodes = [];
+        for (let i = 0; i < 50; i++) {
+            nodes.push(new Node(Math.random() * canvas.width, Math.random() * canvas.height));
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dx = nodes[i].x - nodes[j].x;
+                    const dy = nodes[i].y - nodes[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.strokeStyle = `rgba(0, 212, 255, ${0.2 * (1 - dist / 150)})`;
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            nodes.forEach(node => {
+                node.update();
+                node.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Nav scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Initialize
+        renderReviews();
+    </script>
+</body>
+</html>
