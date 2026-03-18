@@ -735,8 +735,8 @@
                             <p>Custom model designed & trained on your data</p>
                         </div>
                         <div class="pricing-amount">
-                            <div class="pricing-price">$4,700</div>
-                            <div class="pricing-period">one-time</div>
+                            <div class="pricing-price">Pricing Pending Quote</div>
+                            <div class="pricing-period"></div>
                         </div>
                     </div>
                 </div>
@@ -752,7 +752,7 @@
                             <svg width="12" height="12" fill="none" stroke="#0a0f1a" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         </div>
                         <h4>Quarterly</h4>
-                        <div class="price">$1,500</div>
+                        <div class="price">Pricing Pending Quote</div>
                         <div class="period">every 3 months</div>
                     </div>
                     <div class="rerun-card" data-price="2000" data-name="Semi-Annual Re-run" data-period="semi-annual">
@@ -760,7 +760,7 @@
                             <svg width="12" height="12" fill="none" stroke="#0a0f1a" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         </div>
                         <h4>Semi-Annual</h4>
-                        <div class="price">$2,000</div>
+                        <div class="price">Pricing Pending Quote</div>
                         <div class="period">every 6 months</div>
                     </div>
                     <div class="rerun-card" data-price="2500" data-name="Annual Re-run" data-period="annual">
@@ -768,7 +768,7 @@
                             <svg width="12" height="12" fill="none" stroke="#0a0f1a" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         </div>
                         <h4>Annual</h4>
-                        <div class="price">$2,500</div>
+                        <div class="price">Pricing Pending Quote</div>
                         <div class="period">once per year</div>
                     </div>
                 </div>
@@ -782,7 +782,7 @@
                             <svg width="12" height="12" fill="none" stroke="#0a0f1a" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
                         </div>
                         <h4>Strategic Recommendations</h4>
-                        <div class="price">$2,000</div>
+                        <div class="price">Pricing Pending Quote</div>
                         <div class="period">one-time consultation</div>
                     </div>
                 </div>
@@ -803,22 +803,22 @@
                 <div class="summary-items">
                     <div class="summary-item">
                         <span class="summary-item-name">Neural Network Buildout</span>
-                        <span class="summary-item-price">$4,700</span>
+                        <span class="summary-item-price">Pending Quote</span>
                     </div>
                     <div class="summary-item rerun-item" style="display: none;">
                         <span class="summary-item-name rerun-name">—</span>
-                        <span class="summary-item-price rerun-price">$0</span>
+                        <span class="summary-item-price rerun-price">Pending Quote</span>
                     </div>
                 </div>
                 <div class="summary-total">
                     <span class="summary-total-label">Estimated Total</span>
-                    <span class="summary-total-price">$4,700</span>
+                    <span class="summary-total-price">Pending Quote</span>
                 </div>
 
                 <form class="checkout-form" id="checkoutForm" action="https://formspree.io/f/xlgbplpw" method="POST">
-                    <input type="hidden" name="package" value="Neural Network Buildout - $4,700">
+                    <input type="hidden" name="package" value="Neural Network Buildout">
                     <input type="hidden" id="maintenancePlan" name="maintenance_plan" value="None selected">
-                    <input type="hidden" id="totalPrice" name="total_price" value="$4,700">
+                    <input type="hidden" id="totalPrice" name="total_price" value="Pending Quote">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="firstName">First Name</label>
@@ -953,7 +953,6 @@
         const totalPriceField = document.getElementById('totalPrice');
 
         let selectedRerun = null;
-        const basePrice = 4700;
 
         rerunCards.forEach(card => {
             card.addEventListener('click', () => {
@@ -961,24 +960,22 @@
                     card.classList.remove('selected');
                     selectedRerun = null;
                     rerunItem.style.display = 'none';
-                    totalPriceDisplay.textContent = '$' + basePrice.toLocaleString();
+                    totalPriceDisplay.textContent = 'Pending Quote';
                     maintenancePlanField.value = 'None selected';
-                    totalPriceField.value = '$' + basePrice.toLocaleString();
+                    totalPriceField.value = 'Pending Quote';
                 } else {
                     rerunCards.forEach(c => c.classList.remove('selected'));
                     card.classList.add('selected');
                     selectedRerun = {
                         name: card.dataset.name,
-                        price: parseInt(card.dataset.price),
                         period: card.dataset.period
                     };
                     rerunItem.style.display = 'flex';
                     rerunName.textContent = selectedRerun.name;
-                    rerunPrice.textContent = '$' + selectedRerun.price.toLocaleString() + '/' + (selectedRerun.period === 'quarterly' ? 'qtr' : selectedRerun.period === 'semi-annual' ? '6mo' : 'yr');
-                    const total = basePrice + selectedRerun.price;
-                    totalPriceDisplay.textContent = '$' + total.toLocaleString();
-                    maintenancePlanField.value = selectedRerun.name + ' - $' + selectedRerun.price.toLocaleString() + '/' + selectedRerun.period;
-                    totalPriceField.value = '$' + total.toLocaleString();
+                    rerunPrice.textContent = 'Pending Quote';
+                    totalPriceDisplay.textContent = 'Pending Quote';
+                    maintenancePlanField.value = selectedRerun.name + ' (' + selectedRerun.period + ')';
+                    totalPriceField.value = 'Pending Quote';
                 }
             });
         });
