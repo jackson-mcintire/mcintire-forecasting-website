@@ -968,6 +968,7 @@
                 company: "Hypland",
                 title: "CEO",
                 rating: 5,
+                image: "images/jordan-bentley.jpg",
                 text: "Was such a great experience working with Jackson! He gave me a great & accurate and detailed forecast and it really helped my business. I strongly recommend anyone who needs data analysis, forecasting, or anything detail related to check out their services. It was a huge plus for me and my team!"
             }
         ];
@@ -997,7 +998,10 @@
                     </div>
                     <p class="review-text">${review.text}</p>
                     <div class="review-author">
-                        <div class="author-avatar">${review.name.split(' ').map(n => n[0]).join('')}</div>
+                        ${review.image
+                            ? `<img class="author-avatar" src="${review.image}" alt="${review.name}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">`
+                            : `<div class="author-avatar">${review.name.split(' ').map(n => n[0]).join('')}</div>`
+                        }
                         <div class="author-info">
                             <h4>${review.name}</h4>
                             <span>${review.title ? review.title + ', ' : ''}${review.company}</span>
